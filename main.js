@@ -8,6 +8,9 @@
     messagingSenderId: "330870997829"
   });
 
+  const votesRef = firebase.database().ref('votes')
+  const messagesRef = firebase.database().ref('messages')
+
   document
     .querySelectorAll('.choice button')
     .forEach(btn => btn.addEventListener('click', onVote))
@@ -16,11 +19,11 @@
     //submit vote
       //what button
     const voteFor = evt.target.closest('.choice').dataset.value
-    const url = 'https://angularfire-practice.firebaseio.com/votes.json'
+    // const url = 'https://angularfire-practice.firebaseio.com/votes.json'
 
     //go get current counts
     // fetch(url)
-    firebase.database().ref('votes').once('value')
+    votesRef.once('value')
       .then(snap => snap.val())
       // .then(res => res.json())
       .then(data => {
@@ -29,7 +32,7 @@
         //   method: 'PATCH',
         //   body: JSON.stringify({[voteFor]: newCount})
         // })
-        return firebase.database().ref('votes').update({[voteFor]: newCount})
+        return votesRef.update({[voteFor]: newCount})
       })
       //hide buttons
       .catch(console.error)
@@ -37,7 +40,7 @@
       document.querySelectorAll('.hidden').forEach(item=> item.classList.remove('hidden'))
   }
 
-  firebase.database().ref('votes').on('value', onUpdate)
+  votesRef.on('value', onUpdate)
 
   function onUpdate(snap) {
     const data = snap.val()
@@ -48,7 +51,38 @@
       h.innerText = Math.round(current / total * 100) + "%"
     })
   }
+
+
+  const submitMessage = (evt) => {
+    evt.preventDefault()
+    //post name to messages.name
+    //post message to messages.name.messages
+    const nameInput = evt.target.elements.name
+    const contentInput = evt.target.elements.content
+
+    const name = nameInput.value.trim()
+    const content = contentInput.value.trim()
+
+    if(name && content) {
+      messagesRef.push({name, content})
+      .then(() => contentInput.value = '')
+    }
+  }
+
+  const onNewMessage = (snap) => {
+    const {name, content} = snap.val()
+    document.querySelector('.messages').innerHTML += `<div><strong>${name}</strong>: ${content}<div/>`
+  }
+
+
+  messagesRef.limitToLast(3).on('child_added', onNewMessage)
+
+  document.querySelector('form').addEventListener('submit', submitMessage)
+
+
 }
+
+
 
 
 

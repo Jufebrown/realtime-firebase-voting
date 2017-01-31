@@ -4,7 +4,7 @@ img {
 }
 
 .choice {
-  max-width: 45%;
+  max-width: 30%;
   float: left;
 }
 
@@ -14,4 +14,8 @@ button {
 
 .hidden {
   display: none;
+}
+
+.clear {
+  clear: both;
 }
