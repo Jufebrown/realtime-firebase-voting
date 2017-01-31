@@ -1,0 +1,13 @@
+img {
+  max-width: 90%;
+  display: block;
+}
+
+.choice {
+  max-width: 45%;
+  float: left;
+}
+
+button {
+  display: block;
+}
