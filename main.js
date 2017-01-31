@@ -30,18 +30,23 @@
         //   body: JSON.stringify({[voteFor]: newCount})
         // })
         return firebase.database().ref('votes').update({[voteFor]: newCount})
-        .then(()=>{
-          //show current vote totals
-          document.querySelectorAll('h3').forEach(h => {
-            const total = Object.values(data).reduce((acc, val) => acc + val)
-            const current = data[h.closest('.choice').dataset.value]
-            h.innerText = Math.round(current / total * 100) + "%"
-          })
-        })
       })
       //hide buttons
-      .then(document.querySelectorAll('button').forEach(btn => btn.remove()))
       .catch(console.error)
+      document.querySelectorAll('button').forEach(btn => btn.remove())
+      document.querySelectorAll('.hidden').forEach(item=> item.classList.remove('hidden'))
+  }
+
+  firebase.database().ref('votes').on('value', onUpdate)
+
+  function onUpdate(snap) {
+    const data = snap.val()
+
+    document.querySelectorAll('h3').forEach(h => {
+      const total = Object.values(data).reduce((acc, val) => acc + val)
+      const current = data[h.closest('.choice').dataset.value]
+      h.innerText = Math.round(current / total * 100) + "%"
+    })
   }
 }
 
